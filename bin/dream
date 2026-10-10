@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -e
+
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$PROJECT_ROOT"
+
+if [ -f package.json ] && [ ! -d node_modules ]; then
+  echo "Error: dependencies not installed. Run: pnpm install" >&2
+  exit 1
+fi
+
+if [ "$#" -eq 0 ]; then
+  echo "Starting Dream server on default port 8000..."
+  exec node src/main.ts serve --port 8000
+elif [[ "$1" =~ ^[0-9]+$ ]]; then
+  PORT="$1"
+  shift
+  echo "Starting Dream server on port $PORT..."
+  exec node src/main.ts serve --port "$PORT" "$@"
+else
+  exec node src/main.ts "$@"
+fi

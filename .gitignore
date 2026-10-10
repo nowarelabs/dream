@@ -1,0 +1,4 @@
+.direnv/*
+vendor/*
+!.direnv/.keep
+!vendor/.keep

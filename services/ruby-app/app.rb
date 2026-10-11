@@ -1,6 +1,8 @@
 require "webrick"
 require "json"
 
+$stdout.sync = true
+
 port = (ENV["PORT"] || 4002).to_i
 
 server = WEBrick::HTTPServer.new(
@@ -14,4 +16,6 @@ server.mount_proc "/" do |_req, res|
 end
 
 trap("INT") { server.shutdown }
+
+puts "ruby-app listening on http://127.0.0.1:#{port}"
 server.start

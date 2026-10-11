@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SERVICE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$SERVICE_ROOT"
+
+if [ -x _build/prod/rel/elixir_app/bin/elixir_app ]; then
+  exec _build/prod/rel/elixir_app/bin/elixir_app start
+fi
+
+exec env MIX_ENV=dev PORT="${PORT:-4000}" mix run --no-halt

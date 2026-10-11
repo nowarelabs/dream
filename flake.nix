@@ -14,25 +14,56 @@
   outputs = { self, flake-utils, devshell, nixpkgs, ... }:
     flake-utils.lib.eachSystem [ "aarch64-darwin" "x86_64-linux" "aarch64-linux" ] (system:
       let
+        serviceNames = [
+          "dream"
+          "node-app"
+          "next-app"
+          "react-app"
+          "ruby-app"
+          "rails-app"
+          "go-app"
+          "elixir-app"
+          "rust-grpc"
+        ];
+
+        overlays = [
+          devshell.overlays.default
+        ] ++ map (name: import (./nix/overlays + "/${name}.nix") { src = self; }) serviceNames ++ [
+          (import ./nix/overlays/monorepo-runner.nix { src = self; })
+        ];
+
         pkgs = import nixpkgs {
-          inherit system;
-          overlays = [
-            devshell.overlays.default
-            (import ./nix/overlay.nix { src = self; })
-          ];
+          inherit system overlays;
+        };
+
+        lib = pkgs.lib;
+
+        mkApp = drv: flake-utils.lib.mkApp { inherit drv; };
+
+        servicePackages = builtins.listToAttrs (map (name: {
+          name = name;
+          value = pkgs.${name};
+        }) serviceNames);
+
+        serviceApps = builtins.listToAttrs (map (name: {
+          name = name;
+          value = mkApp pkgs.${name};
+        }) serviceNames);
+
+        runnerApp = flake-utils.lib.mkApp {
+          drv = pkgs.monorepoRunner;
+          exePath = "/bin/monorepo-start";
         };
       in
       {
-        packages = {
-          default = pkgs.dream;
-          dream = pkgs.dream;
+        packages = servicePackages // {
+          default = pkgs.monorepoRunner;
+          monorepo-runner = pkgs.monorepoRunner;
         };
 
-        apps = let
-          dream = flake-utils.lib.mkApp { drv = pkgs.dream; };
-        in {
-          default = dream;
-          dream = dream;
+        apps = serviceApps // {
+          default = runnerApp;
+          monorepo-runner = runnerApp;
         };
 
         devShells.default = pkgs.devshell.mkShell {
@@ -43,52 +74,69 @@
             pkgs.pnpm
             pkgs.typescript
             pkgs.typescript-language-server
+            pkgs.ruby_3_3
+            pkgs.go
+            pkgs.elixir
+            pkgs.beam.interpreters.erlang
+            pkgs.rustc
+            pkgs.cargo
+            pkgs.rustfmt
+            pkgs.protobuf
+            pkgs.foreman
             pkgs.zellij
           ];
 
           commands = [
             {
-              name = "dream";
-              help = "Start the Dream server (default port 8000, or pass a port)";
-              command = "./bin/dream \"$@\"";
-            }
-            {
-              name = "dream-dev";
-              help = "Start the Dream server in watch (dev) mode";
-              command = "./bin/dream-dev \"$@\"";
+              name = "monorepo-start";
+              category = "monorepo";
+              help = "Run every service via foreman (dev)";
+              command = "$PRJ_ROOT/bin/orchestrator/monorepo-start \"$@\"";
             }
             {
               name = "install";
-              help = "Install Node dependencies with pnpm";
-              command = "pnpm install --dir \"$PRJ_ROOT\"";
+              category = "monorepo";
+              help = "Install Node dependencies for every service with a package.json";
+              command = ''
+                for dir in "$PRJ_ROOT"/services/*/; do
+                  if [ -f "$dir/package.json" ]; then
+                    echo "==> pnpm install in $dir"
+                    (cd "$dir" && pnpm install)
+                  fi
+                done
+              '';
             }
             {
               name = "devspace";
+              category = "monorepo";
               help = "Open the Zellij dev workspace";
               command = "zellij -l \"$PRJ_ROOT/layout.kdl\"";
             }
-          ];
+          ] ++ map (name: {
+            name = name;
+            category = "services";
+            help = "Run the ${name} service";
+            command = "$PRJ_ROOT/services/${name}/bin/${name} \"$@\"";
+          }) serviceNames;
 
           env = [
             {
               name = "PATH";
-              eval = "$PRJ_ROOT/bin:$PRJ_ROOT/node_modules/.bin:$PATH";
+              eval =
+                lib.concatMapStringsSep ":" (name: "$PRJ_ROOT/services/${name}/bin") serviceNames
+                + ":$PRJ_ROOT/bin/orchestrator:$PRJ_ROOT/node_modules/.bin:$PATH";
             }
           ];
 
           devshell.startup.setup-dream.text = ''
-            chmod +x ./bin/* 2>/dev/null || true
-
-            if [ -f package.json ] && [ ! -d node_modules ]; then
-              echo "==> node_modules missing, run: pnpm install"
-            fi
+            chmod +x ./services/*/bin/* ./bin/orchestrator/* 2>/dev/null || true
 
             echo ""
             echo "------------------------------------------------------------"
-            echo " Dream Environment Ready (Node $(node --version) / TypeScript $(tsc --version | cut -d' ' -f2))"
-            echo " Install:     pnpm install"
-            echo " Run Server:  dream [port] (default: 8000)"
-            echo " Run Dev:     dream-dev [port] (default: 8000, watch mode)"
+            echo " Dream Monorepo Ready"
+            echo " Start all:   monorepo-start"
+            echo " Start one:   <service>   (dream, node-app, go-app, ...)"
+            echo " Install:     install"
             echo " Workspace:   devspace"
             echo "------------------------------------------------------------"
           '';

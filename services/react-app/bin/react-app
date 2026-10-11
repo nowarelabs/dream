@@ -4,4 +4,8 @@ set -euo pipefail
 SERVICE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$SERVICE_ROOT"
 
+if [ -x node_modules/.bin/vite ]; then
+  exec env PORT="${PORT:-3002}" node_modules/.bin/vite preview --host --port "${PORT:-3002}"
+fi
+
 exec env PORT="${PORT:-3002}" pnpm exec vite preview --host --port "${PORT:-3002}"

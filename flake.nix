@@ -76,8 +76,7 @@
             pkgs.typescript-language-server
             pkgs.ruby_3_3
             pkgs.go
-            pkgs.elixir
-            pkgs.beam.interpreters.erlang
+            pkgs.beamPackages.elixir
             pkgs.rustc
             pkgs.cargo
             pkgs.rustfmt

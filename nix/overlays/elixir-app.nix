@@ -2,8 +2,7 @@
 final: prev:
 let
   inherit (prev) lib;
-  elixir = prev.elixir;
-  erlang = prev.beam.interpreters.erlang;
+  elixir = prev.beamPackages.elixir;
 
   elixirAppSrc = lib.fileset.toSource {
     root = /. + builtins.unsafeDiscardStringContext (src + "/services/elixir-app");
@@ -16,7 +15,7 @@ let
 
     src = elixirAppSrc;
 
-    nativeBuildInputs = [ elixir erlang prev.makeWrapper ];
+    nativeBuildInputs = [ elixir prev.makeWrapper ];
 
     dontConfigure = true;
 
@@ -38,7 +37,7 @@ let
       chmod -R u+w $out/libexec/elixir-app
       chmod +x $out/libexec/elixir-app/bin/* 2>/dev/null || true
       makeWrapper $out/libexec/elixir-app/bin/elixir-app $out/bin/elixir-app \
-        --prefix PATH : ${lib.makeBinPath [ elixir erlang ]} \
+        --prefix PATH : ${lib.makeBinPath [ elixir ]} \
         --set PORT "4000"
       runHook postInstall
     '';

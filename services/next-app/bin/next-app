@@ -8,4 +8,4 @@ if [ -f .next/standalone/server.js ]; then
   exec env PORT="${PORT:-3000}" node .next/standalone/server.js
 fi
 
-exec env PORT="${PORT:-3000}" pnpm exec next start
+exec env PORT="${PORT:-3000}" node_modules/.bin/next start

@@ -22,7 +22,7 @@ let
     buildPhase = ''
       runHook preBuild
       export HOME=$(mktemp -d)
-      pnpm install --frozen-lockfile || pnpm install
+      pnpm install --config.strict-dep-builds=false
       pnpm build
       runHook postBuild
     '';

@@ -20,7 +20,7 @@ let
 
     postInstall = ''
       mv $out/bin/go-app $out/bin/.go-app-unwrapped
-      makeWrapper $out/bin/.go-app-unwrapped $out/bin/go-app --set PORT "5000"
+      makeWrapper $out/bin/.go-app-unwrapped $out/bin/go-app --set PORT "8080"
     '';
 
     meta = {

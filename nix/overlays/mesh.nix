@@ -3,8 +3,8 @@ final: prev:
 let
   inherit (prev) lib;
 
-  monorepoRunner = prev.stdenvNoCC.mkDerivation {
-    pname = "monorepo-runner";
+  mesh = prev.stdenvNoCC.mkDerivation {
+    pname = "mesh";
     version = "0.1.0";
 
     dontUnpack = true;
@@ -18,7 +18,7 @@ let
       runHook preInstall
       mkdir -p $out/bin $out/share
       cp ${src + "/Procfile"} $out/share/Procfile
-      makeWrapper ${prev.foreman}/bin/foreman $out/bin/monorepo-start \
+      makeWrapper ${prev.foreman}/bin/foreman $out/bin/mesh \
         --add-flags "start -f $out/share/Procfile" \
         --prefix PATH : ${
           lib.makeBinPath [
@@ -37,12 +37,12 @@ let
     '';
 
     meta = {
-      description = "Monorepo orchestrator";
-      mainProgram = "monorepo-start";
+      description = "Polyglot monorepo mesh";
+      mainProgram = "mesh";
       platforms = lib.platforms.unix;
     };
   };
 in
 {
-  inherit monorepoRunner;
+  inherit mesh;
 }

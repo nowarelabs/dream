@@ -31,7 +31,7 @@ Each service lives in `services/<name>/` and ships its own launcher at
 ```bash
 nix develop        # enter the dev shell (all runtimes + foreman + zellij)
 install            # pnpm install for every service with a package.json
-monorepo-start     # boot every service at once via foreman (Procfile)
+mesh               # boot every service at once via foreman (Procfile)
 ```
 
 Inside the shell each service can also be run on its own, e.g. `dream`,
@@ -41,7 +41,7 @@ automatically on `cd`.
 ### Run without the dev shell
 
 ```bash
-nix run .#monorepo-runner   # foreman boots every service
+nix run .#mesh              # foreman boots every service
 nix run .#dream             # run a single service
 nix build .#dream           # build result/bin/dream
 ```
@@ -56,7 +56,7 @@ Run `menu` inside the shell to list every command.
 
 | Command          | Purpose                                            |
 | ---------------- | -------------------------------------------------- |
-| `monorepo-start` | Boot every service with `foreman` (`Procfile`)      |
+| `mesh`           | Boot every service with `foreman` (`Procfile`)      |
 | `<service>`      | Boot one service (e.g. `dream`, `go-app`)           |
 | `install`        | `pnpm install` for every service with a `package.json` |
 | `devspace`       | Open the Zellij dev workspace (`layout.kdl`)         |
@@ -69,7 +69,7 @@ Run `menu` inside the shell to list every command.
 | `flake.nix`                  | composes overlays, packages, apps, and the devshell  |
 | `nix/overlays/<service>.nix` | one build recipe per service                         |
 | `Procfile`                   | foreman process table (`name: name`)                 |
-| `bin/orchestrator/`          | monorepo-only launcher (`monorepo-start`)            |
+| `bin/orchestrator/`          | monorepo-only launcher (`mesh`)                      |
 | `services/<name>/`           | service sources + its `bin/` launcher                |
 | `vendor/<name>/`             | checked-in per-service payloads                      |
 | `layout.kdl`                 | Zellij workspace layout used by `devspace`           |

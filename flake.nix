@@ -29,7 +29,7 @@
         overlays = [
           devshell.overlays.default
         ] ++ map (name: import (./nix/overlays + "/${name}.nix") { src = self; }) serviceNames ++ [
-          (import ./nix/overlays/monorepo-runner.nix { src = self; })
+          (import ./nix/overlays/mesh.nix { src = self; })
         ];
 
         pkgs = import nixpkgs {
@@ -50,20 +50,20 @@
           value = mkApp pkgs.${name};
         }) serviceNames);
 
-        runnerApp = flake-utils.lib.mkApp {
-          drv = pkgs.monorepoRunner;
-          exePath = "/bin/monorepo-start";
+        meshApp = flake-utils.lib.mkApp {
+          drv = pkgs.mesh;
+          exePath = "/bin/mesh";
         };
       in
       {
         packages = servicePackages // {
-          default = pkgs.monorepoRunner;
-          monorepo-runner = pkgs.monorepoRunner;
+          default = pkgs.mesh;
+          mesh = pkgs.mesh;
         };
 
         apps = serviceApps // {
-          default = runnerApp;
-          monorepo-runner = runnerApp;
+          default = meshApp;
+          mesh = meshApp;
         };
 
         devShells.default = pkgs.devshell.mkShell {
@@ -88,10 +88,10 @@
 
           commands = [
             {
-              name = "monorepo-start";
+              name = "mesh";
               category = "monorepo";
               help = "Run every service via foreman (dev)";
-              command = "$PRJ_ROOT/bin/orchestrator/monorepo-start \"$@\"";
+              command = "$PRJ_ROOT/bin/orchestrator/mesh \"$@\"";
             }
             {
               name = "install";
@@ -134,7 +134,7 @@
             echo ""
             echo "------------------------------------------------------------"
             echo " Dream Monorepo Ready"
-            echo " Start all:   monorepo-start"
+            echo " Start all:   mesh"
             echo " Start one:   <service>   (dream, node-app, go-app, ...)"
             echo " Install:     install"
             echo " Workspace:   devspace"

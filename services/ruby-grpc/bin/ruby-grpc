@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SERVICE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$SERVICE_ROOT"
+
+unset RUBYOPT BUNDLE_BIN_PATH BUNDLE_PATH BUNDLE_APP_CONFIG RUBYLIB GEM_PATH
+export BUNDLE_GEMFILE="$SERVICE_ROOT/Gemfile"
+if [ -n "${GEM_HOME:-}" ]; then
+  export BUNDLE_PATH="$GEM_HOME"
+fi
+
+exec env PORT="${PORT:-50052}" bundle exec ruby server.rb

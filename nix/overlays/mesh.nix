@@ -30,7 +30,15 @@ let
             final.rails-app
             final.go-app
             final.elixir-app
+            final.rust-app
+            final.rust-actix
             final.rust-grpc
+            final.go-gin
+            final.go-grpc
+            final.ts-app
+            final.ts-express
+            final.ts-grpc
+            final.ruby-grpc
           ]
         }
       runHook postInstall

@@ -17,11 +17,19 @@ overlay, plus a single orchestrator that boots them all on distinct ports.
 | `next-app`   | Next.js          | 3000  | `next-app`                     |
 | `rails-app`  | Ruby / Puma      | 3001  | `rails-app`                    |
 | `react-app`  | React / Vite     | 3002  | `react-app`                    |
+| `ts-express` | Node / Express   | 3003  | `ts-express`                   |
+| `go-gin`     | Go / Gin         | 3004  | `go-gin`                       |
+| `rust-actix` | Rust / Actix-Web | 3005  | `rust-actix`                   |
 | `elixir-app` | Elixir           | 4000  | `elixir-app`                   |
 | `node-app`   | Node.js          | 4001  | `node-app`                     |
 | `ruby-app`   | Ruby / WEBrick   | 4002  | `ruby-app`                     |
+| `ts-app`     | Node / TypeScript| 4003  | `ts-app`                       |
+| `rust-app`   | Rust             | 4004  | `rust-app`                     |
 | `go-app`     | Go               | 8080  | `go-app`                       |
 | `rust-grpc`  | Rust             | 50051 | `rust-grpc`                    |
+| `ruby-grpc`  | Ruby / gRPC      | 50052 | `ruby-grpc`                    |
+| `go-grpc`    | Go / gRPC        | 50053 | `go-grpc`                      |
+| `ts-grpc`    | Node / gRPC      | 50054 | `ts-grpc`                      |
 
 Each service lives in `services/<name>/` and ships its own launcher at
 `services/<name>/bin/<name>`. Checked-in payloads go under `vendor/<name>/`.

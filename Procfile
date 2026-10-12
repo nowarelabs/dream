@@ -6,4 +6,12 @@ ruby-app: ruby-app
 rails-app: rails-app
 go-app: go-app
 elixir-app: elixir-app
+rust-app: rust-app
+rust-actix: rust-actix
 rust-grpc: rust-grpc
+go-gin: go-gin
+go-grpc: go-grpc
+ts-app: ts-app
+ts-express: ts-express
+ts-grpc: ts-grpc
+ruby-grpc: ruby-grpc

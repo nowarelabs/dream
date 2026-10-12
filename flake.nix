@@ -23,7 +23,15 @@
           "rails-app"
           "go-app"
           "elixir-app"
+          "rust-app"
+          "rust-actix"
           "rust-grpc"
+          "go-gin"
+          "go-grpc"
+          "ts-app"
+          "ts-express"
+          "ts-grpc"
+          "ruby-grpc"
         ];
 
         overlays = [

@@ -125,13 +125,20 @@
               category = "monorepo";
               help = "Run every service's api.http via httpyac (needs services running)";
               command = ''
+                rc=0
                 for dir in "$PRJ_ROOT"/services/*/; do
                   name="$(basename "$dir")"
                   if [ -f "$dir/api.http" ]; then
                     echo "==> $name"
-                    httpyac "$dir/api.http" "$@"
+                    err="$(mktemp)"
+                    if ! httpyac "$dir/api.http" --all "$@" 2>"$err"; then
+                      rc=1
+                      cat "$err" >&2
+                    fi
+                    rm -f "$err"
                   fi
                 done
+                test "$rc" -eq 0
               '';
             }
           ] ++ map (name: {

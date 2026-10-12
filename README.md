@@ -52,7 +52,9 @@ apitest         # runs every services/<name>/api.http via httpyac
 ```
 
 gRPC files load the shared `echo.proto` via `proto < proto/echo.proto` and call
-`echo.Echo/Say` on their port; HTTP files assert `HTTP/1.1 200`.
+`echo.Echo/Say` on their port, asserting the status code and echoed `message`.
+HTTP files assert status, `content-type`, and the expected JSON body fields,
+so a non-zero exit proves the API isn't behaving as expected.
 
 ## Quick start
 

@@ -32,6 +32,42 @@
           "ts-express"
           "ts-grpc"
           "ruby-grpc"
+          "c-app"
+          "c-microhttpd"
+          "c-grpc"
+          "cpp-app"
+          "cpp-crow"
+          "cpp-grpc"
+          "java-app"
+          "java-spring"
+          "java-grpc"
+          "csharp-app"
+          "csharp-aspnet"
+          "csharp-grpc"
+          "scala-app"
+          "scala-http4s"
+          "scala-grpc"
+          "php-app"
+          "php-slim"
+          "php-grpc"
+          "zig-app"
+          "kotlin-app"
+          "kotlin-ktor"
+          "kotlin-grpc"
+          "python-app"
+          "python-flask"
+          "python-grpc"
+          "r-app"
+          "r-plumber"
+          "clojure-app"
+          "clojure-compojure"
+          "clojure-grpc"
+          "lisp-app"
+          "lisp-hunchentoot"
+          "lua-app"
+          "lua-lapis"
+          "haskell-app"
+          "haskell-scotty"
         ];
 
         overlays = [
@@ -92,6 +128,31 @@
             pkgs.foreman
             pkgs.httpyac
             pkgs.zellij
+            pkgs.stdenv.cc
+            pkgs.gnumake
+            pkgs.pkg-config
+            pkgs.libmicrohttpd
+            pkgs.crow
+            pkgs.grpc
+            pkgs.openjdk
+            pkgs.maven
+            pkgs.gradle
+            pkgs.sbt
+            pkgs.scala
+            pkgs.kotlin
+            pkgs.dotnet-sdk_8
+            pkgs.php83
+            pkgs.php83.packages.composer
+            pkgs.R
+            pkgs.lua5_4
+            pkgs.luarocks
+            pkgs.openresty
+            pkgs.zig_0_14
+            pkgs.clojure
+            pkgs.leiningen
+            pkgs.sbcl
+            pkgs.ghc
+            pkgs.cabal-install
           ];
 
           commands = [

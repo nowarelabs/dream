@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SERVICE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$SERVICE_ROOT"
+
+if [ ! -f src/echo_pb2.py ]; then
+  python3 -m grpc_tools.protoc -Iproto \
+    --python_out=src \
+    --grpc_python_out=src \
+    proto/echo.proto
+fi
+
+exec env PORT="${PORT:-50062}" python3 src/server.py

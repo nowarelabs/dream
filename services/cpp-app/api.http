@@ -1,0 +1,8 @@
+### home
+GET http://127.0.0.1:4021/
+
+HTTP/1.1 200
+
+?? status equals 200
+?? header content-type includes application/json
+?? body service equals cpp-app

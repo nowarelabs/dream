@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SERVICE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$SERVICE_ROOT"
+
+BUILD="$(mktemp -d)"
+protoc --proto_path=proto --cpp_out="$BUILD" --grpc_out="$BUILD" \
+  --plugin=protoc-gen-grpc="$(command -v grpc_cpp_plugin)" proto/echo.proto
+c++ -std=c++17 -O2 -I"$BUILD" -o "$BUILD/cpp-grpc" \
+  src/main.cpp "$BUILD/echo.pb.cc" "$BUILD/echo.grpc.pb.cc" \
+  $(pkg-config --cflags --libs grpc++ protobuf)
+exec env PORT="${PORT:-50056}" "$BUILD/cpp-grpc"

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SERVICE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$SERVICE_ROOT"
+
+exec env PORT="${PORT:-3025}" php -S "127.0.0.1:${PORT:-3025}" -t public public/index.php

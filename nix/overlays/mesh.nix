@@ -39,6 +39,42 @@ let
             final.ts-express
             final.ts-grpc
             final.ruby-grpc
+            final.c-app
+            final.c-microhttpd
+            final.c-grpc
+            final.cpp-app
+            final.cpp-crow
+            final.cpp-grpc
+            final.java-app
+            final.java-spring
+            final.java-grpc
+            final.csharp-app
+            final.csharp-aspnet
+            final.csharp-grpc
+            final.scala-app
+            final.scala-http4s
+            final.scala-grpc
+            final.php-app
+            final.php-slim
+            final.php-grpc
+            final.zig-app
+            final.kotlin-app
+            final.kotlin-ktor
+            final.kotlin-grpc
+            final.python-app
+            final.python-flask
+            final.python-grpc
+            final.r-app
+            final.r-plumber
+            final.clojure-app
+            final.clojure-compojure
+            final.clojure-grpc
+            final.lisp-app
+            final.lisp-hunchentoot
+            final.lua-app
+            final.lua-lapis
+            final.haskell-app
+            final.haskell-scotty
           ]
         }
       runHook postInstall

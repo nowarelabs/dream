@@ -28,6 +28,42 @@ overlay, plus a single orchestrator that boots them all on distinct ports.
 | `go-app`     | Go               | 8080  | `go-app`                       |
 | `rust-grpc`  | Rust             | 50051 | `rust-grpc`                    |
 | `ruby-grpc`  | Ruby / gRPC      | 50052 | `ruby-grpc`                    |
+| `c-app`      | C                | 4020  | `c-app`                        |
+| `c-microhttpd` | C / libmicrohttpd | 3020 | `c-microhttpd`               |
+| `c-grpc`     | C / gRPC         | 50055 | `c-grpc`                       |
+| `cpp-app`    | C++              | 4021  | `cpp-app`                      |
+| `cpp-crow`   | C++ / Crow       | 3021  | `cpp-crow`                     |
+| `cpp-grpc`   | C++ / gRPC       | 50056 | `cpp-grpc`                     |
+| `java-app`   | Java             | 4022  | `java-app`                     |
+| `java-spring`| Java / Spring    | 3022  | `java-spring`                  |
+| `java-grpc`  | Java / gRPC      | 50057 | `java-grpc`                    |
+| `csharp-app` | C#               | 4023  | `csharp-app`                   |
+| `csharp-aspnet` | C# / ASP.NET  | 3023  | `csharp-aspnet`                |
+| `csharp-grpc`| C# / gRPC        | 50058 | `csharp-grpc`                  |
+| `scala-app`  | Scala            | 4024  | `scala-app`                    |
+| `scala-http4s` | Scala / http4s | 3024  | `scala-http4s`                 |
+| `scala-grpc` | Scala / gRPC     | 50059 | `scala-grpc`                   |
+| `php-app`    | PHP              | 4025  | `php-app`                      |
+| `php-slim`   | PHP / Slim       | 3025  | `php-slim`                     |
+| `php-grpc`   | PHP / gRPC       | 50060 | `php-grpc`                     |
+| `kotlin-app` | Kotlin           | 4027  | `kotlin-app`                   |
+| `kotlin-ktor`| Kotlin / Ktor    | 3027  | `kotlin-ktor`                  |
+| `kotlin-grpc`| Kotlin / gRPC    | 50061 | `kotlin-grpc`                  |
+| `python-app` | Python           | 4028  | `python-app`                   |
+| `python-flask` | Python / Flask | 3028  | `python-flask`                 |
+| `python-grpc`| Python / gRPC    | 50062 | `python-grpc`                  |
+| `r-app`      | R                | 4029  | `r-app`                        |
+| `r-plumber`  | R / plumber      | 3029  | `r-plumber`                    |
+| `zig-app`    | Zig              | 4026  | `zig-app`                      |
+| `clojure-app`| Clojure          | 4030  | `clojure-app`                  |
+| `clojure-compojure` | Clojure / Compojure | 3030 | `clojure-compojure`       |
+| `clojure-grpc` | Clojure / gRPC | 50063 | `clojure-grpc`                 |
+| `lisp-app`   | Common Lisp      | 4031  | `lisp-app`                     |
+| `lisp-hunchentoot` | Lisp / Hunchentoot | 3031 | `lisp-hunchentoot`        |
+| `lua-app`    | Lua              | 4032  | `lua-app`                      |
+| `lua-lapis`  | Lua / Lapis      | 3032  | `lua-lapis`                    |
+| `haskell-app`| Haskell          | 4033  | `haskell-app`                  |
+| `haskell-scotty` | Haskell / Scotty | 3033 | `haskell-scotty`             |
 | `go-grpc`    | Go / gRPC        | 50053 | `go-grpc`                      |
 | `ts-grpc`    | Node / gRPC      | 50054 | `ts-grpc`                      |
 

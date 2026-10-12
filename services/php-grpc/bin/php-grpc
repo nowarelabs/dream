@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SERVICE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$SERVICE_ROOT"
+
+if [ ! -f gen/Echo/EchoStub.php ]; then
+  protoc --proto_path=proto \
+    --php_out=gen \
+    --grpc_out=gen \
+    --plugin=protoc-gen-grpc="$(command -v grpc_php_plugin)" \
+    --grpc_opt=generate_server \
+    proto/echo.proto
+fi
+
+exec env PORT="${PORT:-50060}" php server.php

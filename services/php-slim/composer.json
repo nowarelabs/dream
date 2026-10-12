@@ -1,0 +1,8 @@
+{
+  "name": "dream/php-slim",
+  "require": {
+    "php": ">=8.1",
+    "slim/slim": "^4.14",
+    "slim/psr7": "^1.7"
+  }
+}

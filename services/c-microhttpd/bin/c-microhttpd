@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SERVICE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$SERVICE_ROOT"
+
+BIN="$(mktemp)"
+cc -O2 -o "$BIN" src/main.c -lmicrohttpd
+exec env PORT="${PORT:-3020}" "$BIN"

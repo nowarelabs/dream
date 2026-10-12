@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SERVICE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$SERVICE_ROOT"
+
+: "${CLJ_CACHE:=${TMPDIR:-/tmp}/dream-clojure-cache}"
+export CLJ_CACHE
+mkdir -p "$CLJ_CACHE"
+
+if [ ! -d classes ] || [ -z "$(ls -A classes 2>/dev/null)" ]; then
+  ./build.sh
+fi
+
+exec env PORT="${PORT:-50063}" clojure -M -m clojure-grpc.core

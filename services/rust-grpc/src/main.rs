@@ -1,28 +1,36 @@
-use std::env;
-use std::io::{Read, Write};
-use std::net::{TcpListener, TcpStream};
+use tonic::{Request, Response, Status, transport::Server};
 
-fn main() {
-    let port = env::var("PORT").unwrap_or_else(|_| "50051".to_string());
-    let addr = format!("0.0.0.0:{port}");
-    let listener = TcpListener::bind(&addr).expect("failed to bind");
-    println!("rust-grpc listening on http://127.0.0.1:{port}");
+pub mod echo {
+    tonic::include_proto!("echo");
+}
 
-    for stream in listener.incoming().flatten() {
-        handle(stream);
+use echo::echo_server::{Echo, EchoServer};
+use echo::{EchoReply, EchoRequest};
+
+#[derive(Default)]
+pub struct EchoSvc;
+
+#[tonic::async_trait]
+impl Echo for EchoSvc {
+    async fn say(&self, request: Request<EchoRequest>) -> Result<Response<EchoReply>, Status> {
+        let message = request.into_inner().message;
+        println!("rust-grpc say: {message}");
+        Ok(Response::new(EchoReply {
+            message: format!("echo: {message}"),
+        }))
     }
 }
 
-fn handle(mut stream: TcpStream) {
-    let mut buf = [0u8; 1024];
-    let _ = stream.read(&mut buf);
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let port = std::env::var("PORT").unwrap_or_else(|_| "50051".to_string());
+    let addr = format!("0.0.0.0:{port}").parse()?;
+    println!("rust-grpc listening on 0.0.0.0:{port}");
 
-    let body = r#"{"service":"rust-grpc"}"#;
-    let response = format!(
-        "HTTP/1.1 200 OK\r\ncontent-type: application/json\r\ncontent-length: {}\r\n\r\n{}",
-        body.len(),
-        body
-    );
+    Server::builder()
+        .add_service(EchoServer::new(EchoSvc::default()))
+        .serve(addr)
+        .await?;
 
-    let _ = stream.write_all(response.as_bytes());
+    Ok(())
 }

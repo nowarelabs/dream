@@ -2,14 +2,14 @@ syntax = "proto3";
 
 package echo;
 
-service Echo {
-  rpc Say(EchoRequest) returns (EchoReply);
-}
-
 message EchoRequest {
   string message = 1;
 }
 
 message EchoReply {
   string message = 1;
+}
+
+service Echo {
+  rpc Say(EchoRequest) returns (EchoReply);
 }

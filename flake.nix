@@ -103,11 +103,19 @@
         packages = servicePackages // {
           default = pkgs.mesh;
           mesh = pkgs.mesh;
+          update-deps = pkgs.writeShellScriptBin "update-deps" ''
+            export PATH="${pkgs.nix}/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            exec bash ${./nix/update-deps.sh} "$@"
+          '';
         };
 
         apps = serviceApps // {
           default = meshApp;
           mesh = meshApp;
+          update-deps = flake-utils.lib.mkApp {
+            drv = self.packages.${system}.update-deps;
+            exePath = "/bin/update-deps";
+          };
         };
 
         devShells.default = pkgs.devshell.mkShell {
@@ -174,6 +182,12 @@
                   fi
                 done
               '';
+            }
+            {
+              name = "update-deps";
+              category = "monorepo";
+              help = "Regenerate dependency pins/FOD hashes for a service (or --all)";
+              command = "bash $PRJ_ROOT/nix/update-deps.sh \"$@\"";
             }
             {
               name = "devspace";

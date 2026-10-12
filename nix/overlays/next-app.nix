@@ -9,20 +9,28 @@ let
     fileset = /. + builtins.unsafeDiscardStringContext (src + "/services/next-app");
   };
 
+  pnpmDeps = prev.fetchPnpmDeps {
+    pname = "next-app";
+    version = "0.1.0";
+    src = nextAppSrc;
+    fetcherVersion = 4;
+    hash = "sha256-+Q9okjyJK1wYOl8YMUI7Px6gLUx//i/eIHJ5npQXKoo=";
+  };
+
   next-app = prev.stdenv.mkDerivation {
     pname = "next-app";
     version = "0.1.0";
 
     src = nextAppSrc;
 
-    nativeBuildInputs = [ nodejs prev.pnpm prev.makeWrapper ];
+    nativeBuildInputs = [ nodejs prev.pnpm prev.pnpmConfigHook prev.makeWrapper ];
 
-    dontConfigure = true;
+    inherit pnpmDeps;
+
+    NEXT_TELEMETRY_DISABLED = "1";
 
     buildPhase = ''
       runHook preBuild
-      export HOME=$(mktemp -d)
-      pnpm install --config.strict-dep-builds=false
       pnpm build
       runHook postBuild
     '';

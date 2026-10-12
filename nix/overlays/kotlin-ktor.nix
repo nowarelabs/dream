@@ -8,7 +8,7 @@ let
     fileset = /. + builtins.unsafeDiscardStringContext (src + "/services/kotlin-ktor");
   };
 
-  kotlin-ktor = prev.stdenv.mkDerivation {
+  kotlin-ktor = prev.stdenv.mkDerivation (finalAttrs: {
     pname = "kotlin-ktor";
     version = "0.1.0";
 
@@ -16,23 +16,23 @@ let
 
     nativeBuildInputs = [ prev.jdk prev.gradle prev.makeWrapper ];
 
-    dontConfigure = true;
+    mitmCache = prev.gradle.fetchDeps {
+      pkg = finalAttrs.finalPackage;
+      data = ./kotlin-ktor-deps.json;
+    };
 
-    buildPhase = ''
-      runHook preBuild
-      export HOME=$(mktemp -d)
-      export GRADLE_USER_HOME=$HOME/.gradle
-      gradle --no-daemon --console=plain installDist
-      runHook postBuild
-    '';
+    __darwinAllowLocalNetworking = true;
+
+    gradleBuildTask = "installDist";
+    doCheck = false;
 
     installPhase = ''
       runHook preInstall
-      mkdir -p $out/libexec/kotlin-ktor $out/bin
-      cp -r . $out/libexec/kotlin-ktor/
-      chmod -R u+w $out/libexec/kotlin-ktor
-      chmod +x $out/libexec/kotlin-ktor/bin/* 2>/dev/null || true
-      makeWrapper $out/libexec/kotlin-ktor/bin/kotlin-ktor $out/bin/kotlin-ktor \
+      mkdir -p $out/libexec $out/bin
+      cp -r build/install/${finalAttrs.pname} $out/libexec/
+      chmod -R u+w $out/libexec
+      chmod +x $out/libexec/${finalAttrs.pname}/bin/* 2>/dev/null || true
+      makeWrapper $out/libexec/${finalAttrs.pname}/bin/${finalAttrs.pname} $out/bin/${finalAttrs.pname} \
         --prefix PATH : ${lib.makeBinPath [ prev.jdk ]} \
         --set PORT "3027"
       runHook postInstall
@@ -43,7 +43,7 @@ let
       mainProgram = "kotlin-ktor";
       platforms = lib.platforms.unix;
     };
-  };
+  });
 in
 {
   inherit kotlin-ktor;

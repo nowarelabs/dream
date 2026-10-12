@@ -8,28 +8,20 @@ let
     fileset = /. + builtins.unsafeDiscardStringContext (src + "/services/java-spring");
   };
 
-  java-spring = prev.stdenv.mkDerivation {
+  java-spring = prev.maven.buildMavenPackage {
     pname = "java-spring";
     version = "0.1.0";
 
     src = javaSpringSrc;
 
-    nativeBuildInputs = [ prev.jdk prev.maven prev.makeWrapper ];
+    mvnHash = "sha256-+J4hjsiiPw9Jtw8KKUTthGrO5E+Eph8xtCi1sw8wmxU=";
+    doCheck = false;
 
-    dontConfigure = true;
-
-    buildPhase = ''
-      runHook preBuild
-      export HOME=$(mktemp -d)
-      cat > $HOME/maven-settings.xml <<'EOF'
-<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd"/>
-EOF
-      mvn -q -s $HOME/maven-settings.xml -Dmaven.repo.local=$HOME/.m2/repository -DskipTests package
-      runHook postBuild
-    '';
+    nativeBuildInputs = [ prev.makeWrapper ];
 
     installPhase = ''
       runHook preInstall
+      rm -rf .m2
       mkdir -p $out/libexec/java-spring $out/bin
       cp -r . $out/libexec/java-spring/
       chmod -R u+w $out/libexec/java-spring

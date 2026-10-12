@@ -8,36 +8,20 @@ let
     fileset = /. + builtins.unsafeDiscardStringContext (src + "/services/csharp-aspnet");
   };
 
-  csharp-aspnet = prev.stdenv.mkDerivation {
+  csharp-aspnet = prev.buildDotnetModule {
     pname = "csharp-aspnet";
     version = "0.1.0";
 
     src = csharpAspnetSrc;
 
-    nativeBuildInputs = [ prev.dotnet-sdk_8 prev.makeWrapper ];
+    projectFile = "csharp-aspnet.csproj";
+    nugetDeps = ./csharp-aspnet-deps.json;
+    "dotnet-sdk" = prev.dotnet-sdk_8;
+    "dotnet-runtime" = prev.dotnet-aspnetcore_8;
 
-    dontConfigure = true;
+    doCheck = false;
 
-    buildPhase = ''
-      runHook preBuild
-      export HOME=$(mktemp -d)
-      export DOTNET_CLI_TELEMETRY_OPTOUT=1
-      export DOTNET_CLI_HOME=$HOME
-      dotnet publish -c Release -o out
-      runHook postBuild
-    '';
-
-    installPhase = ''
-      runHook preInstall
-      mkdir -p $out/libexec/csharp-aspnet $out/bin
-      cp -r out/. $out/libexec/csharp-aspnet/
-      cat > $out/bin/csharp-aspnet <<EOF
-      #!/bin/sh
-      exec env PORT="\''${PORT:-3023}" ${prev.dotnet-sdk_8}/bin/dotnet $out/libexec/csharp-aspnet/csharp-aspnet.dll
-      EOF
-      chmod +x $out/bin/csharp-aspnet
-      runHook postInstall
-    '';
+    makeWrapperArgs = [ "--set" "PORT" "3023" ];
 
     meta = {
       description = "ASP.NET Core minimal API service";

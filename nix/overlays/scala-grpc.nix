@@ -8,32 +8,28 @@ let
     fileset = /. + builtins.unsafeDiscardStringContext (src + "/services/scala-grpc");
   };
 
-  scala-grpc = prev.stdenv.mkDerivation {
+  scala-grpc = prev.maven.buildMavenPackage {
     pname = "scala-grpc";
     version = "0.1.0";
 
     src = scalaGrpcSrc;
 
-    nativeBuildInputs = [ prev.jdk prev.maven prev.scala prev.makeWrapper ];
+    mvnHash = "sha256-tKN6IPGw4SERUEh9pBdx8OuvdE0xxMcJi6d3pJktRWc=";
+    mvnGoal = "generate-sources";
 
-    dontConfigure = true;
+    nativeBuildInputs = [ prev.jdk prev.scala prev.makeWrapper ];
 
-    buildPhase = ''
-      runHook preBuild
-      export HOME=$(mktemp -d)
-      cat > $HOME/maven-settings.xml <<'EOF'
-<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd"/>
-EOF
-      mvn -q -s $HOME/maven-settings.xml -Dmaven.repo.local=$HOME/.m2/repository -DskipTests generate-sources dependency:copy-dependencies
-      mkdir -p target/classes classes
+    postBuild = ''
+      mkdir -p target/classes target/dependency classes
+      find .m2 -name '*.jar' -exec cp -n {} target/dependency/ \;
       find target/generated-sources -name '*.java' > java-sources.txt
       javac -nowarn -cp "target/dependency/*" -d target/classes @java-sources.txt
       scalac -cp "target/classes:target/dependency/*" -d classes src/main/scala/Main.scala
-      runHook postBuild
     '';
 
     installPhase = ''
       runHook preInstall
+      rm -rf .m2
       mkdir -p $out/libexec/scala-grpc $out/bin
       cp -r . $out/libexec/scala-grpc/
       chmod -R u+w $out/libexec/scala-grpc

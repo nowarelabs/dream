@@ -10,6 +10,36 @@ let
     fileset = /. + builtins.unsafeDiscardStringContext (src + "/services/clojure-app");
   };
 
+  m2 = prev.stdenv.mkDerivation {
+    pname = "clojure-app-m2";
+    version = "0.1.0";
+
+    src = clojureAppSrc;
+
+    nativeBuildInputs = [ clojure jdk ];
+
+    dontConfigure = true;
+    dontFixup = true;
+
+    installPhase = ''
+      runHook preInstall
+      export HOME=$(mktemp -d)
+      export JAVA_TOOL_OPTIONS="-Duser.home=$HOME"
+      export CLJ_CONFIG=$HOME/.clojure
+      export CLJ_CACHE=$HOME/.clojure/.cpcache
+      clojure -P
+      mkdir -p $out
+      cp -r $HOME/.m2/repository/. $out/
+      find $out -name '_remote.repositories' -delete
+      find $out -name '*.lastUpdated' -delete
+      runHook postInstall
+    '';
+
+    outputHashMode = "recursive";
+    outputHashAlgo = "sha256";
+    outputHash = "sha256-zBNWC8dAX3dUUFOXE3fhUcqbAwBUyVFJaZ0VdJeh348=";
+  };
+
   clojure-app = prev.stdenv.mkDerivation {
     pname = "clojure-app";
     version = "0.1.0";
@@ -23,21 +53,13 @@ let
 
     installPhase = ''
       runHook preInstall
-      export HOME=$(mktemp -d)
-      export JAVA_TOOL_OPTIONS="-Duser.home=$HOME"
-      export CLJ_CONFIG=$HOME/.clojure
-      export CLJ_CACHE=$HOME/.clojure/.cpcache
-
       mkdir -p $out/libexec/clojure-app $out/bin $out/lib/m2
       cp -r . $out/libexec/clojure-app/
       chmod -R u+w $out/libexec/clojure-app
       chmod +x $out/libexec/clojure-app/bin/clojure-app
+      cp -r ${m2}/. $out/lib/m2/
 
       cd $out/libexec/clojure-app
-      clojure -P
-      cp -r $HOME/.m2/repository/. $out/lib/m2/
-      find $out/lib/m2 -name '_remote.repositories' -delete
-      find $out/lib/m2 -name '*.lastUpdated' -delete
       sed "1s|{|{:mvn/local-repo \"$out/lib/m2\"|" deps.edn > deps.edn.tmp
       mv deps.edn.tmp deps.edn
 

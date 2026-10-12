@@ -1,0 +1,27 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    nio4r (2.7.5)
+    puma (6.6.1)
+      nio4r (~> 2.0)
+    rack (3.2.7)
+
+PLATFORMS
+  arm64-darwin-25
+  ruby
+
+DEPENDENCIES
+  puma (~> 6.5)
+  rack (~> 3.1)
+
+CHECKSUMS
+  bundler (4.0.12) sha256=7f8b757d28dfb636e7b24fba2344ac6dd13b5b24f4b46d62573d483f211825ac
+  nio4r (2.7.5) sha256=6c90168e48fb5f8e768419c93abb94ba2b892a1d0602cb06eef16d8b7df1dca1
+  puma (6.6.1) sha256=b9b56e4a4ea75d1bfa6d9e1972ee2c9f43d0883f011826d914e8e37b3694ea1e
+  rack (3.2.7) sha256=93e13e1c24f93556671d85d2d79fa228c3485815c50d7e2f265b5330c6528fb7
+
+RUBY VERSION
+  ruby 3.3.10
+
+BUNDLED WITH
+  4.0.12

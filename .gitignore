@@ -10,7 +10,3 @@ dist/
 target/
 _build/
 deps/
-
-vendor/*
-!vendor/*/
-!vendor/*/.gitkeep

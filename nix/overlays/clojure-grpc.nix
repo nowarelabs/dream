@@ -11,6 +11,36 @@ let
     fileset = /. + builtins.unsafeDiscardStringContext (src + "/services/clojure-grpc");
   };
 
+  m2 = prev.stdenv.mkDerivation {
+    pname = "clojure-grpc-m2";
+    version = "0.1.0";
+
+    src = clojureGrpcSrc;
+
+    nativeBuildInputs = [ clojure jdk ];
+
+    dontConfigure = true;
+    dontFixup = true;
+
+    installPhase = ''
+      runHook preInstall
+      export HOME=$(mktemp -d)
+      export JAVA_TOOL_OPTIONS="-Duser.home=$HOME"
+      export CLJ_CONFIG=$HOME/.clojure
+      export CLJ_CACHE=$HOME/.clojure/.cpcache
+      clojure -P
+      mkdir -p $out
+      cp -r $HOME/.m2/repository/. $out/
+      find $out -name '_remote.repositories' -delete
+      find $out -name '*.lastUpdated' -delete
+      runHook postInstall
+    '';
+
+    outputHashMode = "recursive";
+    outputHashAlgo = "sha256";
+    outputHash = "sha256-NeBEuS6dItRwZYSJTyi2qoyZDuHyIVaNSHDGhzSi6CU=";
+  };
+
   clojure-grpc = prev.stdenv.mkDerivation {
     pname = "clojure-grpc";
     version = "0.1.0";
@@ -31,15 +61,13 @@ let
 
       mkdir -p gen classes
       protoc --proto_path=proto --java_out=gen proto/echo.proto
-      clojure -P
-      javac -cp "$(clojure -Spath)" -d classes $(find gen -name '*.java')
+      CP=$(clojure -Sdeps "{:mvn/local-repo \"${m2}\"}" -Spath)
+      javac -cp "$CP" -d classes $(find gen -name '*.java')
 
       mkdir -p $out/libexec/clojure-grpc $out/bin $out/lib/m2
       cp -r . $out/libexec/clojure-grpc/
       chmod -R u+w $out/libexec/clojure-grpc
-      cp -r $HOME/.m2/repository/. $out/lib/m2/
-      find $out/lib/m2 -name '_remote.repositories' -delete
-      find $out/lib/m2 -name '*.lastUpdated' -delete
+      cp -r ${m2}/. $out/lib/m2/
       cd $out/libexec/clojure-grpc
       sed "1s|{|{:mvn/local-repo \"$out/lib/m2\"|" deps.edn > deps.edn.tmp
       mv deps.edn.tmp deps.edn

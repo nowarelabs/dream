@@ -1,0 +1,21 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    webrick (1.9.2)
+
+PLATFORMS
+  arm64-darwin-25
+  ruby
+
+DEPENDENCIES
+  webrick (~> 1.9)
+
+CHECKSUMS
+  bundler (4.0.12) sha256=7f8b757d28dfb636e7b24fba2344ac6dd13b5b24f4b46d62573d483f211825ac
+  webrick (1.9.2) sha256=beb4a15fc474defed24a3bda4ffd88a490d517c9e4e6118c3edce59e45864131
+
+RUBY VERSION
+  ruby 3.3.10
+
+BUNDLED WITH
+  4.0.12

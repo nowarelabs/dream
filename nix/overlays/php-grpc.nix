@@ -10,21 +10,50 @@ let
     fileset = /. + builtins.unsafeDiscardStringContext (src + "/services/php-grpc");
   };
 
+  vendor = prev.stdenv.mkDerivation {
+    pname = "php-grpc-vendor";
+    version = "0.1.0";
+
+    src = phpGrpcSrc;
+
+    nativeBuildInputs = [ php composer prev.unzip ];
+
+    dontConfigure = true;
+    dontFixup = true;
+
+    buildPhase = ''
+      runHook preBuild
+      export HOME=$(mktemp -d)
+      composer install --no-dev --no-interaction --no-progress --no-scripts \
+        --ignore-platform-req=ext-grpc
+      runHook postBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out
+      cp -r vendor $out/vendor
+      runHook postInstall
+    '';
+
+    outputHashMode = "recursive";
+    outputHashAlgo = "sha256";
+    outputHash = "sha256-Vbn8hwyOpGJGvfUeH9ItnY3e5o/6dY9UVegOWkdSBOs=";
+  };
+
   php-grpc = prev.stdenv.mkDerivation {
     pname = "php-grpc";
     version = "0.1.0";
 
     src = phpGrpcSrc;
 
-    nativeBuildInputs = [ php prev.protobuf prev.grpc composer prev.unzip prev.makeWrapper ];
+    nativeBuildInputs = [ php prev.protobuf prev.grpc prev.makeWrapper ];
 
     dontConfigure = true;
 
     buildPhase = ''
       runHook preBuild
-      export HOME=$(mktemp -d)
-      composer install --no-dev --no-interaction --no-progress \
-        --ignore-platform-req=ext-grpc
+      cp -r ${vendor}/vendor ./vendor
       mkdir -p gen
       protoc --proto_path=proto \
         --php_out=gen \

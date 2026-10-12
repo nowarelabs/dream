@@ -10,25 +10,50 @@ let
     fileset = /. + builtins.unsafeDiscardStringContext (src + "/services/php-slim");
   };
 
+  vendor = prev.stdenv.mkDerivation {
+    pname = "php-slim-vendor";
+    version = "0.1.0";
+
+    src = phpSlimSrc;
+
+    nativeBuildInputs = [ php composer prev.unzip ];
+
+    dontConfigure = true;
+    dontFixup = true;
+
+    buildPhase = ''
+      runHook preBuild
+      export HOME=$(mktemp -d)
+      composer install --no-dev --no-interaction --no-progress --no-scripts
+      runHook postBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out
+      cp -r vendor $out/vendor
+      runHook postInstall
+    '';
+
+    outputHashMode = "recursive";
+    outputHashAlgo = "sha256";
+    outputHash = "sha256-qfvikWZ1LwZrSBOx9LTQpfsn5hGHRvVnkwf3cKYIgBE=";
+  };
+
   php-slim = prev.stdenv.mkDerivation {
     pname = "php-slim";
     version = "0.1.0";
 
     src = phpSlimSrc;
 
-    nativeBuildInputs = [ php composer prev.unzip prev.makeWrapper ];
+    nativeBuildInputs = [ php prev.makeWrapper ];
 
     dontConfigure = true;
-
-    buildPhase = ''
-      runHook preBuild
-      export HOME=$(mktemp -d)
-      composer install --no-dev --no-interaction --no-progress
-      runHook postBuild
-    '';
+    dontBuild = true;
 
     installPhase = ''
       runHook preInstall
+      cp -r ${vendor}/vendor ./vendor
       mkdir -p $out/libexec/php-slim $out/bin
       cp -r . $out/libexec/php-slim/
       chmod -R u+w $out/libexec/php-slim

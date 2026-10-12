@@ -9,38 +9,37 @@ let
     fileset = /. + builtins.unsafeDiscardStringContext (src + "/services/rails-app");
   };
 
+  rubyEnv = prev.bundlerEnv {
+    name = "rails-app-env";
+    inherit ruby;
+    gemfile = railsAppSrc + "/Gemfile";
+    lockfile = railsAppSrc + "/Gemfile.lock";
+    gemset = railsAppSrc + "/gemset.nix";
+  };
+
+  gempath = "${rubyEnv}/lib/ruby/gems/3.3.0";
+
   rails-app = prev.stdenv.mkDerivation {
     pname = "rails-app";
     version = "0.1.0";
 
     src = railsAppSrc;
 
-    nativeBuildInputs = [ ruby prev.makeWrapper ];
+    nativeBuildInputs = [ rubyEnv ruby prev.makeWrapper ];
 
     dontConfigure = true;
-
-    buildPhase = ''
-      runHook preBuild
-      export HOME=$(mktemp -d)
-      export RAILS_ENV=production
-      export SECRET_KEY_BASE="build-only-dummy-secret"
-      export GEM_HOME=$out/share/ruby
-      bundle config set --local path "$GEM_HOME"
-      bundle config set --local without "development test"
-      bundle install
-      bundle exec rails assets:precompile || true
-      runHook postBuild
-    '';
+    dontBuild = true;
 
     installPhase = ''
       runHook preInstall
-      mkdir -p $out/libexec/rails-app $out/bin $out/share
+      mkdir -p $out/libexec/rails-app $out/bin
       cp -r . $out/libexec/rails-app/
       chmod -R u+w $out/libexec/rails-app
       chmod +x $out/libexec/rails-app/bin/* 2>/dev/null || true
       makeWrapper $out/libexec/rails-app/bin/rails-app $out/bin/rails-app \
-        --prefix PATH : ${lib.makeBinPath [ ruby ]} \
-        --set GEM_HOME "$out/share/ruby" \
+        --prefix PATH : ${lib.makeBinPath [ rubyEnv ruby ]} \
+        --set GEM_HOME "${gempath}" \
+        --set GEM_PATH "${gempath}" \
         --set RAILS_ENV "production" \
         --set PORT "3001"
       runHook postInstall

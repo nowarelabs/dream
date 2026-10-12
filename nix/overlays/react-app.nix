@@ -9,20 +9,26 @@ let
     fileset = /. + builtins.unsafeDiscardStringContext (src + "/services/react-app");
   };
 
+  pnpmDeps = prev.fetchPnpmDeps {
+    pname = "react-app";
+    version = "0.1.0";
+    src = reactAppSrc;
+    fetcherVersion = 4;
+    hash = "sha256-LQNej5s6myx2KlVCK36ufgSnz3v9J3wBcYRRM6/Gh0w=";
+  };
+
   react-app = prev.stdenv.mkDerivation {
     pname = "react-app";
     version = "0.1.0";
 
     src = reactAppSrc;
 
-    nativeBuildInputs = [ nodejs prev.pnpm prev.makeWrapper ];
+    nativeBuildInputs = [ nodejs prev.pnpm prev.pnpmConfigHook prev.makeWrapper ];
 
-    dontConfigure = true;
+    inherit pnpmDeps;
 
     buildPhase = ''
       runHook preBuild
-      export HOME=$(mktemp -d)
-      pnpm install --config.strict-dep-builds=false
       pnpm build
       runHook postBuild
     '';

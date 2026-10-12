@@ -9,22 +9,25 @@ let
     fileset = /. + builtins.unsafeDiscardStringContext (src + "/services/ts-grpc");
   };
 
+  pnpmDeps = prev.fetchPnpmDeps {
+    pname = "ts-grpc";
+    version = "0.1.0";
+    src = tsGrpcSrc;
+    fetcherVersion = 4;
+    hash = "sha256-s/NVTd3LUQVERd/53EUJCHNjzKwgMiiKBIqvwM8RsOA=";
+  };
+
   ts-grpc = prev.stdenv.mkDerivation {
     pname = "ts-grpc";
     version = "0.1.0";
 
     src = tsGrpcSrc;
 
-    nativeBuildInputs = [ nodejs prev.pnpm prev.makeWrapper ];
+    nativeBuildInputs = [ nodejs prev.pnpm prev.pnpmConfigHook prev.makeWrapper ];
 
-    dontConfigure = true;
+    inherit pnpmDeps;
 
-    buildPhase = ''
-      runHook preBuild
-      export HOME=$(mktemp -d)
-      pnpm install --config.strict-dep-builds=false
-      runHook postBuild
-    '';
+    dontBuild = true;
 
     installPhase = ''
       runHook preInstall

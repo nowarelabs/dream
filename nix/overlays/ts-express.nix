@@ -9,22 +9,25 @@ let
     fileset = /. + builtins.unsafeDiscardStringContext (src + "/services/ts-express");
   };
 
+  pnpmDeps = prev.fetchPnpmDeps {
+    pname = "ts-express";
+    version = "0.1.0";
+    src = tsExpressSrc;
+    fetcherVersion = 4;
+    hash = "sha256-Hv4b6+9ZM+jk0BdBPPUDMN0YAJcowEkfWop9NRf9Rw8=";
+  };
+
   ts-express = prev.stdenv.mkDerivation {
     pname = "ts-express";
     version = "0.1.0";
 
     src = tsExpressSrc;
 
-    nativeBuildInputs = [ nodejs prev.pnpm prev.makeWrapper ];
+    nativeBuildInputs = [ nodejs prev.pnpm prev.pnpmConfigHook prev.makeWrapper ];
 
-    dontConfigure = true;
+    inherit pnpmDeps;
 
-    buildPhase = ''
-      runHook preBuild
-      export HOME=$(mktemp -d)
-      pnpm install --config.strict-dep-builds=false
-      runHook postBuild
-    '';
+    dontBuild = true;
 
     installPhase = ''
       runHook preInstall

@@ -6,3 +6,6 @@ GRPC grpc://127.0.0.1:50051/echo.Echo/Say
 {
   "message": "hello-rust-grpc"
 }
+
+?? status equals 0
+?? body message equals echo: hello-rust-grpc

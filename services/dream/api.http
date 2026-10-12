@@ -3,6 +3,10 @@ GET http://127.0.0.1:8000/health
 
 HTTP/1.1 200
 
+?? status equals 200
+?? header content-type includes application/json
+?? body status equals ok
+
 ### systemone
 POST http://127.0.0.1:8000/v1/systemone
 content-type: application/json
@@ -12,3 +16,7 @@ content-type: application/json
 }
 
 HTTP/1.1 200
+
+?? status equals 200
+?? body model equals clef-flash-4bit
+?? body answers exists

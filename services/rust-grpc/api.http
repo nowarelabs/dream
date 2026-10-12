@@ -1,0 +1,8 @@
+### Say
+proto < proto/echo.proto
+
+GRPC grpc://127.0.0.1:50051/echo.Echo/Say
+
+{
+  "message": "hello-rust-grpc"
+}

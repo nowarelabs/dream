@@ -90,6 +90,7 @@
             pkgs.rustfmt
             pkgs.protobuf
             pkgs.foreman
+            pkgs.httpyac
             pkgs.zellij
           ];
 
@@ -118,6 +119,20 @@
               category = "monorepo";
               help = "Open the Zellij dev workspace";
               command = "zellij -l \"$PRJ_ROOT/layout.kdl\"";
+            }
+            {
+              name = "apitest";
+              category = "monorepo";
+              help = "Run every service's api.http via httpyac (needs services running)";
+              command = ''
+                for dir in "$PRJ_ROOT"/services/*/; do
+                  name="$(basename "$dir")"
+                  if [ -f "$dir/api.http" ]; then
+                    echo "==> $name"
+                    httpyac "$dir/api.http" "$@"
+                  fi
+                done
+              '';
             }
           ] ++ map (name: {
             name = name;
